@@ -1,11 +1,16 @@
 package com.rsolution.rcommerce.domain.order;
 
 import com.rsolution.rcommerce.domain.User;
+import com.rsolution.rcommerce.domain.orderItem.OrderItem;
 import com.rsolution.rcommerce.domain.payment.Payment;
+import com.rsolution.rcommerce.domain.product.Product;
 import com.rsolution.rcommerce.enums.OrderStatus;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "tb_order")
@@ -27,6 +32,9 @@ public class Order {
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     private Payment payment;
+
+    @OneToMany(mappedBy = "id.order")
+    private Set<OrderItem> orderItems = new HashSet<>();
     public Order() {
     }
 
@@ -67,5 +75,21 @@ public class Order {
 
     public void setClient(User client) {
         this.client = client;
+    }
+
+    public Payment getPayment() {
+        return payment;
+    }
+
+    public void setPayment(Payment payment) {
+        this.payment = payment;
+    }
+
+    public Set<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public List<Product> getProducts(){
+        return orderItems.stream().map(OrderItem::getProduct).toList();
     }
 }

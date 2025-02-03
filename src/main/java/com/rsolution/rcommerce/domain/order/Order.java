@@ -1,6 +1,7 @@
 package com.rsolution.rcommerce.domain.order;
 
 import com.rsolution.rcommerce.domain.User;
+import com.rsolution.rcommerce.domain.payment.Payment;
 import com.rsolution.rcommerce.enums.OrderStatus;
 import jakarta.persistence.*;
 
@@ -23,6 +24,9 @@ public class Order {
     @JoinColumn(name = "client_id")
     private User client;
 
+
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    private Payment payment;
     public Order() {
     }
 

@@ -2,6 +2,7 @@ package com.rsolution.rcommerce.controllers;
 
 import com.rsolution.rcommerce.domain.product.dto.ProductDto;
 import com.rsolution.rcommerce.services.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,14 +32,14 @@ public class ProductController {
   }
 
   @PostMapping
-    public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto product) {
+    public ResponseEntity<ProductDto> createProduct( @Valid  @RequestBody  ProductDto product) {
         ProductDto newProduct = productService.saveProduct(product);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newProduct.getId()).toUri();
         return ResponseEntity.created(uri).body(newProduct);
   }
 
   @PutMapping("/{id}")
-    public ResponseEntity<ProductDto> updateProduct(@PathVariable("id") Long id, @RequestBody ProductDto product) {
+    public ResponseEntity<ProductDto> updateProduct(@PathVariable("id") Long id,@Valid @RequestBody ProductDto product) {
         productService.updateProduct(id, product);
         return ResponseEntity.noContent().build();
   }

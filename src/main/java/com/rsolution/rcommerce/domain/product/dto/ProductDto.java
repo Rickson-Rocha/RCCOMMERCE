@@ -1,12 +1,19 @@
 package com.rsolution.rcommerce.domain.product.dto;
 
 import com.rsolution.rcommerce.domain.product.Product;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 
 public class ProductDto {
     private Long id;
+    @NotBlank(message = "The name field is required")
+    @Size(min = 3,max = 80,message = "The name filed must be between 3 and 80 characters")
     private String name;
+    @Size(min = 10,message = "The description field must have at least 10 characters")
     private String description;
+    @Positive(message = "The price field must be a positive number")
     private Double price;
     private String imageUrl;
 

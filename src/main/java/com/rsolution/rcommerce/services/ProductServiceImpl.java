@@ -3,10 +3,14 @@ package com.rsolution.rcommerce.services;
 import com.rsolution.rcommerce.domain.product.Product;
 import com.rsolution.rcommerce.domain.product.dto.ProductDto;
 import com.rsolution.rcommerce.repositories.ProductRepository;
+import com.rsolution.rcommerce.services.exceptions.DatabaseException;
 import com.rsolution.rcommerce.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -44,15 +48,27 @@ public class ProductServiceImpl  implements ProductService {
     @Override
     @Transactional
     public void updateProduct(Long id, ProductDto productDto) {
-        Product product = productRepository.getReferenceById(id);
-        copyToEntity(productDto,product);
-        productRepository.save(product);
+        try{
+            Product product = productRepository.getReferenceById(id);
+            copyToEntity(productDto,product);
+            productRepository.save(product);
+        }catch (EntityNotFoundException e){
+            throw new ResourceNotFoundException("Resource not found; " + id);
+        }
+
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void deleteProduct(Long id) {
-        Optional<Product> product = productRepository.findById(id);
-        productRepository.deleteById(product.get().getId());
+        if(!productRepository.existsById(id)){
+            throw new ResourceNotFoundException("Resource not found; " + id);
+        }
+        try{
+            productRepository.deleteById(id);
+        } catch (DataIntegrityViolationException e){
+            throw new DatabaseException("Referential integrity failure");
+        }
 
     }
 
